@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ==================== 1. SHAASHADDA LOGIN-KA (CUSUB) ==================== -->
+  <div id="login-screen" class="login-wrapper">
+    <div class="login-card">
+      <h1>Student Management System</h1>
+      <p class="login-subtitle">Fadlan soo gal si aad u maamusho nidaamka</p>
+
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Geli username (admin)" required />
+        </div>
+        <div class="login-field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Geli password (admin123)" required />
+        </div>
+        <button type="submit" class="btn-primary login-btn">Soo Gal (Login)</button>
+      </form>
+
+      <p id="login-message" class="msg"></p>
+      <p class="login-hint">Tijaabo: <strong>admin</strong> / <strong>admin123</strong></p>
+    </div>
+  </div>
+
+  <!-- ==================== 2. SHAASHADDA MAAMULKA (DASHBOARD) ==================== -->
+  <div id="dashboard-screen" class="container" style="display: none;">
+    <header class="header header-flex">
+      <div>
+        <h1>Student Management System</h1>
+        <p>Nidaamka Maamulka Ardayda, Koorsooyinka, iyo Imtixaanaadka</p>
+      </div>
+      <div class="user-controls">
+        <span id="logged-user-name" class="user-badge">Admin</span>
+        <button onclick="logout()" class="btn-logout">Ka Bax (Logout)</button>
+      </div>
+    </header>
+
+    <!-- Kaararka Tirakoobka Guud -->
+    <section class="stats">
+      <div class="card">
+        <h3>Wadarta Ardayda</h3>
+        <p id="total-students">0</p>
+      </div>
+      <div class="card">
+        <h3>Ardayda Active-ka ah</h3>
+        <p id="active-students">0</p>
+      </div>
+      <div class="card">
+        <h3>Wadarta Koorsooyinka</h3>
+        <p id="total-courses">0</p>
+      </div>
+      <div class="card">
+        <h3>Diiwaangelinta Koorsooyinka</h3>
+        <p id="total-enrollments">0</p>
+      </div>
+    </section>
+
+    <!-- Badhamada Kala Wareegga Bogagga -->
+    <nav class="tabs">
+      <button class="tab-btn active" onclick="switchTab('students-tab', this)">1. Ardayda (Students)</button>
+      <button class="tab-btn" onclick="switchTab('courses-tab', this)">2. Koorsooyinka (Courses)</button>
+      <button class="tab-btn" onclick="switchTab('enrollments-tab', this)">3. Diiwaangelinta & Dhibcaha</button>
+    </nav>
+
+    <!-- QAYBTA 1: ARDAYDA -->
+    <div id="students-tab" class="tab-content active">
+      <section class="form-section">
+        <h2 id="form-title">Diiwaangeli Arday Cusub</h2>
+        <form id="add-student-form">
+          <div class="form-grid">
+            <input type="text" id="student_code" placeholder="Student Code (tusaale: STD-004)" required />
+            <input type="text" id="full_name" placeholder="Magaca Buuxa ee Ardayga" required />
+            <input type="email" id="email" placeholder="Email-ka (tusaale: ali@example.com)" required />
+            <input type="text" id="department" placeholder="Kulliyadda (tusaale: Computer Science)" required />
+            <select id="status">
+              <option value="Active">Active (Wuu dhigtaa)</option>
+              <option value="Graduated">Graduated (Wuu qalin-jabiyay)</option>
+              <option value="Suspended">Suspended (Hakad ku jira)</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="btn-primary">+ Ku Dar Ardayga</button>
+            <button type="button" id="cancel-btn" class="btn-cancel" style="display: none;">Jooji</button>
+          </div>
+        </form>
+        <p id="form-message" class="msg"></p>
+      </section>
+
+      <section class="table-section">
+       
+        <div class="table-header">
+          <h2>Liiska Ardayda Diiwaangashan</h2>
+          <div class="table-actions">
+            <input type="text" id="search-input" class="search-box" placeholder="Raadi magac, code, ama kulliyad..." />
+            <button type="button" onclick="exportStudentsCSV()" class="btn-export">Soo Deji CSV</button>
+            <button type="button" onclick="window.print()" class="btn-print">Daabac (Print)</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Magaca Buuxa</th>
+              <th>Email</th>
+              <th>Kulliyadda</th>
+              <th>Xaaladda</th>
+              <th>Ficil</th>
+            </tr>
+          </thead>
+          <tbody id="students-table-body"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- QAYBTA 2: KOORSOOYINKA -->
+    <div id="courses-tab" class="tab-content">
+      <section class="form-section">
+        <h2>Ku Dar Koorso Cusub</h2>
+        <form id="add-course-form">
+          <div class="form-grid">
+            <input type="text" id="course_code" placeholder="Course Code (tusaale: CS-401)" required />
+            <input type="text" id="course_title" placeholder="Magaca Koorsada (tusaale: Mobile App Dev)" required />
+            <input type="number" id="credit_hours" placeholder="Saacadaha (Credit Hours)" min="1" max="6" value="3" required />
+          </div>
+          <button type="submit" class="btn-primary">+ Ku Dar Koorsada</button>
+        </form>
+        <p id="course-message" class="msg"></p>
+      </section>
+
+      <section class="table-section">
+        <h2>Liiska Koorsooyinka Jira</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Magaca Koorsada</th>
+              <th>Credit Hours</th>
+              <th>Ficil</th>
+            </tr>
+          </thead>
+          <tbody id="courses-table-body"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- QAYBTA 3: DIIWAANGELINTA & DHIBCAHA -->
+    <div id="enrollments-tab" class="tab-content">
+      <section class="form-section">
+        <h2>Arday Ku Diiwaangeli Koorso</h2>
+        <form id="add-enrollment-form">
+          <div class="form-grid">
+            <select id="enroll-student-select" required>
+              <option value="">-- Dooro Ardayga --</option>
+            </select>
+            <select id="enroll-course-select" required>
+              <option value="">-- Dooro Koorsada --</option>
+            </select>
+            <select id="enroll-grade-select">
+              <option value="Pending">Darajada: Pending (Weli lama sixin)</option>
+              <option value="A">A (Excellent)</option>
+              <option value="B+">B+ (Very Good)</option>
+              <option value="B">B (Good)</option>
+              <option value="C">C (Pass)</option>
+              <option value="F">F (Fail)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">+ Ku Qor Koorsada</button>
+        </form>
+        <p id="enrollment-message" class="msg"></p>
+      </section>
+
+      <section class="table-section">
+        <h2>Ardayda iyo Koorsooyinka ay Dhigtaan</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Ardayga</th>
+              <th>Koorsada</th>
+              <th>Darajada (Grade)</th>
+              <th>Ficil</th>
+            </tr>
+          </thead>
+          <tbody id="enrollments-table-body"></tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
